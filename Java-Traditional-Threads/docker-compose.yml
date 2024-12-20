@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    command: ["rabbitmq-server"]
+
+  rabbitmq-data-loader:
+    image: python:3.11-slim
+    container_name: rabbitmq-data-loader
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./scripts:/scripts
+    command: ["python", "/scripts/load_data.py"]
+    build:
+      context: ./scripts
+
+
+  traditional-threads-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: traditional-threads-app
+    depends_on:
+      - rabbitmq
+      - rabbitmq-data-loader
+    ports:
+      - "8080:8080"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+
+volumes:
+  rabbitmq_data:
+
+# Directory "scripts" should contain load_data.py to populate RabbitMQ.

@@ -3,6 +3,6 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY target/your-application.jar /app/your-application.jar
+COPY target/Java-Virtual-Thread-1.0.jar /app/Java-Virtual-Thread-1.0.jar
 
-CMD ["java", "-jar", "your-application.jar"]
+CMD ["java", "-jar", "Java-Virtual-Thread-1.0.jar"]
