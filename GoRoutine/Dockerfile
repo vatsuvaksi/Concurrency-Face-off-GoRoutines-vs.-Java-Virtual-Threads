@@ -9,4 +9,5 @@ RUN go build -o app main.go
 
 EXPOSE 8080
 
-CMD ["/app/app"]
+# Sleep for 2 minutes (120 seconds) before starting the app
+CMD sleep 80 && /app/app

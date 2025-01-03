@@ -25,7 +25,6 @@ services:
     build:
       context: ./scripts
 
-
   go-routine-app:
     build:
       context: .
@@ -34,11 +33,31 @@ services:
     depends_on:
       - rabbitmq
       - rabbitmq-data-loader
+      - psql
     ports:
       - "8080:8080"
     environment:
       RABBITMQ_HOST: rabbitmq
+      DB_HOST: psql
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: mydatabase
+    # command: ["sh", "-c", "until pg_isready -h psql -p 5432; do echo waiting for psql; sleep 2; done; ./start-app.sh"]
+
+  psql:
+    image: postgres:13
+    container_name: psql
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      # - psql_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init script
 
 volumes:
   rabbitmq_data:
-
+  psql_data:
